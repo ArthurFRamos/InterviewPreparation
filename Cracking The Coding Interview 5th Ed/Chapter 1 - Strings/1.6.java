@@ -1,22 +1,22 @@
-	public void rotate(int[][] matrix)
+public void rotate(int[][] matrix) {
+	rotateHelper(0,matrix.length, matrix);
+}
+
+private void rotateHelper(int begin, int size, int[][] matrix)
+{
+	if(size <= 0)
+		return;
+	
+	size = size - 1;
+	
+	for(int i = 0; i < size; i++)
 	{
-		rotate(0,matrix.length, matrix);
+		int temp = matrix[begin][begin + i];
+		matrix[begin][begin + i] = matrix[begin + size - i][begin];
+		matrix[begin + size - i][begin] = matrix[begin + size][begin + size - i];
+		matrix[begin + size][begin + size - i] = matrix[begin + i][begin + size];
+		matrix[begin + i][begin + size] = temp;
 	}
 	
-	private void rotate(int begin, int size, int[][] matrix)
-	{
-		if(size <= 0)
-			return;
-		
-		for(int i = 0; i < size/2; i++)
-		{
-			int temp = 	matrix[begin + size - 1][begin + i];
-			matrix[begin + size - 1][begin + i] = matrix[begin + size - 1][begin + size - 1 - i];
-			matrix[begin + size - 1][begin + size -1 -i] = matrix[begin][begin + size - 1 - i];
-			matrix[begin][begin + size -1 - i] = matrix[begin + i][begin];
-			matrix[begin + i][begin] = temp;
-		}
-		
-		rotate(begin + 1, size - 2, matrix);
-	
-	}
+	rotateHelper(begin + 1, size -1, matrix);
+}

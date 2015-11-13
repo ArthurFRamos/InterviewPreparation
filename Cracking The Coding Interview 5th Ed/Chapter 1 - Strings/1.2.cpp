@@ -1,4 +1,3 @@
-
 void reverseString(char* string)
 {
 	int size = 0;
