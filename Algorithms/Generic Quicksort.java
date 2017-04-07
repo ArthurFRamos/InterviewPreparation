@@ -67,7 +67,7 @@ public class Quicksort<T extends Comparable<T>>
     values[0] = 5;
     values[1] = 10;
     values[2] = 3;
-       	Quicksort<Integer> sorter = new Quicksort<Integer>(values);
+    Quicksort<Integer> sorter = new Quicksort<Integer>(values);
     sorter.sort();
     
     for(int i = 0; i < values.length; i++)
