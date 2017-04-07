@@ -64,8 +64,9 @@ public class HashMap<T,E>
   
   	public void put(T key, E value)
     {
-    	int pos = key.hashCode() % buckets.size();
- 
+      	//Very important to notice that hash calculations can overflow, giving negative numbers! This avoids array ouf bounds exception...
+    	int pos = Math.abs(key.hashCode() % buckets.size());
+
       	ArrayList<Pair<T,E>> current = buckets.get(pos);
       	
       
@@ -76,16 +77,18 @@ public class HashMap<T,E>
       	
       	while(it.hasNext())
         {
+          	System.out.println(key);
         	Pair<T,E> currentPair = it.next();
           	if(currentPair.equals(newPair))
             {
-             	currentPair = newPair;
+             	currentPair.value = newPair.value;
              	return;
             }
         }
-      	
+      	if(current.isEmpty())
+        	load++;
       	current.add(newPair);
-      	load++;
+    
       	reHash();
     }
   
@@ -116,7 +119,8 @@ public class HashMap<T,E>
           	if(current.key.equals(key))
             {
             	buckets.get(pos).remove(i);
-              	load--;
+              	if(buckets.get(pos).isEmpty())
+                	load--;
              	break; 
             }
         }
@@ -140,7 +144,8 @@ public class HashMap<T,E>
               	buffer.append("key: ");
               	buffer.append(buckets.get(i).get(j).key.toString());
               	buffer.append(" value ");
-              	buffer.append(buckets.get(i).get(j).value.toString());            
+              	buffer.append(buckets.get(i).get(j).value.toString());
+              	buffer.append(" ");
             }
           	
           	if(!buckets.get(i).isEmpty())
@@ -159,9 +164,16 @@ public class HashMap<T,E>
     	HashMap<String,Integer> map = new HashMap<>();
       	map.put("Lais",25);
       	map.put("Arthur", 26);
+      	map.put("Arthur2",28);
+        map.put("Arthur100",30);
+      	map.put("Lais40",40);
+      	map.put("Jarisneide",54);
       	map.put("Amanda", 22);
+      	map.put("Amanda",24);
       	map.print();
+ 
 		System.out.println(map.get("Amanda"));
+  
       	map.print();
     }
   
