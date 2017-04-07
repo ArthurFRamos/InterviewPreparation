@@ -64,7 +64,7 @@ public class HashMap<T,E>
   
   	public void put(T key, E value)
     {
-      	//Very important to notice that hash calculations can overflow, giving negative numbers! This avoids array ouf bounds exception...
+      	//Very important to notice that hash calculations can overflow, giving negative numbers! This avoids array out of bounds exception...
     	int pos = Math.abs(key.hashCode() % buckets.size());
 
       	ArrayList<Pair<T,E>> current = buckets.get(pos);
