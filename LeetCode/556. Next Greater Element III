@@ -1,0 +1,119 @@
+public class Solution {
+    public int nextGreaterElement(int n) {
+        
+        int[] digits = numberToArray(n);
+
+        if(digits.length == 1)
+            return -1;
+        
+        for(int i = digits.length - 1; i >= 0; i--)
+        {
+            for(int j = digits.length - 1; j > i; j--)
+            {
+                if(digits[i] < digits[j])
+                {
+                    swap(digits,i,j);
+                    quicksort(digits, i+1, digits.length - 1);
+                    return arrayToInt(digits);
+                }
+            }
+        }
+        
+        return -1;
+    }
+    
+    private void quicksort(int[] array, int left, int right)
+    {
+       int index = partition(array,left,right);
+       
+        if(left < index - 1)
+            quicksort(array,left, index - 1);
+        if(right > index)
+            quicksort(array,index, right);
+    }
+    
+        
+    private int partition(int[] array, int left, int right)
+    {
+        int pivot = array[(left + right)/2];
+        
+        while(left <= right)
+        {
+            while(array[left] < pivot)
+                left++;
+            while(array[right] > pivot)
+                right--;
+            
+            if(left <= right)
+            {
+                swap(array,left,right);
+                left++;
+                right--;
+            }
+        }
+        
+        return left;
+    }
+    
+    private int arrayToInt(int [] digits)
+    {
+        long mult = 1;
+        long number = 0;
+        
+        for(int i = digits.length - 1; i >= 0; i--)
+        {
+            number += digits[i]*mult;
+            mult = mult*10;
+        }
+        
+        if(number > Integer.MAX_VALUE)
+            return -1;
+            
+        return (int)number;
+    }
+    
+    private int[] numberToArray(int n)
+    {
+        int nDigits = numberOfDigits(n);
+        int[] digits = new int[nDigits];
+        
+        for(int i = 0; i < digits.length; i++)
+            digits[i] = getDigit(n,digits.length - 1 - i);
+            
+        return digits;
+    }
+    
+    private int getDigit(int n, int pos)
+    {
+        int mult = 10;
+        
+        for(int i = 0; i < pos; i++)
+            mult *= 10;
+        
+        return (n%mult)/(mult/10);
+    }
+    
+    private int numberOfDigits(int n)
+    {
+        if(n == 0)
+            return 1;
+        
+        int digits = 0;
+        
+        while(n != 0)
+        {
+            digits++;
+            n /= 10;
+        }
+        
+        return digits;
+        
+    }
+    
+    private void swap(int[] array, int i, int j)
+    {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
