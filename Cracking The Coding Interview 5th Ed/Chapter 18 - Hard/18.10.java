@@ -1,123 +1,104 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
-
-public class TransformWord {
-	
-	public class GraphNode
+public class Solution {
+    
+    public class GraphNode
 	{
 		public String word;
 		public ArrayList<GraphNode> adj;
+		public ArrayList<List<String>> paths;
 		
 		public GraphNode(String word)
 		{
 			this.word = word;
 			adj = new ArrayList<>();
+		    paths = new ArrayList<>();
 		}
 	}
 	
-	private HashMap<String,GraphNode> map;
-	private ArrayList<String> dictionary;
-	private ArrayList<String> finalPath;
-	private HashSet<String> flags;
-	private int minDepth = Integer.MAX_VALUE;
-	
-	public TransformWord(ArrayList<String> dic)
+
+    
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) 
+    {
+        wordList.add(beginWord);   
+        GraphNode start = buildGraph(wordList,beginWord);
+        
+        HashMap<String,Integer> map = new HashMap<>();
+        HashSet<String> flags = new HashSet<>();
+        
+        map.put(start.word, 1);
+
+        LinkedList<GraphNode> queue = new LinkedList<>();
+        queue.add(start);
+        
+        List<List<String>> paths = new ArrayList<List<String>>();
+        
+        while(!queue.isEmpty())
+        {
+            GraphNode current = queue.poll();
+            if(current.word.equals(endWord))
+            {
+                paths = current.paths;
+                return paths;
+                
+            }
+            for(int i = 0; i < current.adj.size(); i++)
+            {
+                GraphNode adj = current.adj.get(i);
+                int currentValue = map.get(current.word);
+                
+                if(!map.containsKey(adj.word))
+                    map.put(adj.word, currentValue + 1);
+                
+                int value = map.get(adj.word);
+                
+                if(value > currentValue)
+                {
+                   if(!flags.contains(adj.word))
+                   {
+                        queue.add(adj);
+                        flags.add(adj.word);
+                   }
+                    for(int j = 0; j < current.paths.size(); j++)
+                    {
+                        ArrayList<String> newPath = new ArrayList<>();
+                        
+                        for(int k = 0; k < current.paths.get(j).size(); k++)
+                            newPath.add(current.paths.get(j).get(k));
+                        newPath.add(adj.word);
+                        adj.paths.add(newPath);
+     
+                    }
+                }
+            }
+        }
+        return paths;
+    }
+    
+    private GraphNode buildGraph(List<String> dictionary, String beginWord)
 	{
-		this.dictionary = dic;
-		map = new HashMap<>();
-		this.buildGraph();
-		this.flags = new HashSet<>();
-	}
-	
-	public void path(String a, String b)
-	{
-		GraphNode current = map.get(a);
-		
-		if(current == null)
-		{
-			System.out.println("There is no path starting at " + a);
-			return;
-		}
-		
-		
-		ArrayList<String> path = new ArrayList<>();
-		path.add(current.word);
-		flags.add(current.word);
-		
-		find(current,path, b,0);
-		
-		if(finalPath == null)
-		{
-			System.out.println("There is no path ending at " + b);
-			return;
-		}
-		
-		for(int i = 0; i < finalPath.size(); i++)
-			System.out.println(finalPath.get(i));
-	}
-	
-	private void find(GraphNode current,ArrayList<String> path, String target, int depth)
-	{
-		flags.add(current.word);
-		
-		if(current.word.equals(target) && depth < minDepth)
-		{
-			minDepth = depth;
-			finalPath = new ArrayList<>();
-			
-			for(int i = 0; i < path.size(); i++)
-				finalPath.add(path.get(i));
-			
-			flags.remove(current.word);
-			return;
-		}
-		
-		for(int i = 0; i < current.adj.size(); i++)
-		{
-			GraphNode temp = current.adj.get(i);
-			if(!flags.contains(temp.word))
-			{
-				path.add(temp.word);
-				find(temp,path,target, depth + 1);
-			}
-		}
-		flags.remove(current.word);
-	}
-	
-	private void buildGraph()
-	{
-		GraphNode node = null;
+		GraphNode[] nodes = new GraphNode[dictionary.size()];
 		
 		for(int i = 0; i < dictionary.size(); i++)
-		{
-			String current = dictionary.get(i);
-			if(!map.containsKey(current))
-			{
-				node = new GraphNode(current);
-				map.put(current, node);
-			}
-			else
-				node = map.get(current);
-			
-			for(int j = 0; j < dictionary.size(); j++)
-			{
+            nodes[i] = new GraphNode(dictionary.get(i));    
+		
+	    for(int i = 0; i < nodes.length; i++)
+	    {
+	        GraphNode current = nodes[i];
+	        for(int j = 0; j < nodes.length; j++)
+		    {
 				if(i == j)
 					continue;
-				String temp = dictionary.get(j);
-				 if(compareWords(current, temp))
-				 {
-					 if(!map.containsKey(temp))
-					 {
-						 GraphNode toAdd = new GraphNode(temp);
-					 	 map.put(temp, toAdd);
-					 }
-					
-					 node.adj.add(map.get(temp));
-				 }
-			}
-		}
+				String temp = nodes[j].word;
+				
+				 if(compareWords(current.word, temp))
+					 current.adj.add(nodes[j]);
+	    	}
+	    }
+	    
+	    ArrayList<String> path = new ArrayList<>();
+	    path.add(beginWord);
+	    nodes[nodes.length -1].paths.add(path);
+	    
+		return nodes[nodes.length - 1];
 	}
 	
 	private boolean compareWords(String a, String b)
@@ -134,16 +115,5 @@ public class TransformWord {
 		
 		return (countDifferences == 1);
 	}
-	
-	public static void main(String[] args)
-	{
-		ArrayList<String> dic = new ArrayList<>();
-		dic.add("DAMP");
-		dic.add("LAMP");
-		dic.add("LIMP");
-		dic.add("LIME");
-		dic.add("LIKE");
-		TransformWord a = new TransformWord(dic);
-		a.path("LIME", "DAMP");
-	}
+    
 }
