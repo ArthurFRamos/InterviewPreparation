@@ -34,7 +34,7 @@ public class Solution {
                 else
                     temp = "22";
             }
-            
+           
             buffer.append(temp);
             
             isOne = !isOne;
